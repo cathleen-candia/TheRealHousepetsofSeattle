@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Pets</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Poiret+One&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8c96a;
+      --black: #0d0c0a;
+      --charcoal: #1a1814;
+      --ivory: #faf6ed;
+      --muted: #8a7d60;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Cormorant Garamond', serif;
+      background-color: var(--charcoal);
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(201,168,76,0.04) 60px, rgba(201,168,76,0.04) 61px),
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.04) 60px, rgba(201,168,76,0.04) 61px);
+      color: var(--ivory);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      padding: 64px 24px 56px;
+    }
+    header::before, header::after {
+      content: '';
+      display: block;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 0 auto;
+      width: 80%;
+    }
+    header::before { margin-bottom: 40px; }
+    header::after  { margin-top: 40px; }
+
+    .deco-line {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+    .deco-line span { display: block; height: 1px; width: 80px; background: var(--gold); }
+    .deco-diamond { width: 8px; height: 8px; background: var(--gold); transform: rotate(45deg); flex-shrink: 0; }
+
+    h1 {
+      font-family: 'Poiret One', sans-serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      line-height: 1;
+      text-shadow: 0 0 40px rgba(201,168,76,0.25);
+    }
+    .subtitle {
+      font-style: italic;
+      font-weight: 300;
+      font-size: 1.15rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+      margin-top: 10px;
+    }
+
+    /* ── GALLERY ── */
+    main { max-width: 1140px; margin: 0 auto; padding: 48px 24px 64px; }
+    .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 36px; }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--black);
+      border: 1px solid rgba(201,168,76,0.3);
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card::before, .card::after {
+      content: '';
+      position: absolute;
+      width: 18px; height: 18px;
+      border-color: var(--gold);
+      border-style: solid;
+      z-index: 2;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    .card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .card::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(201,168,76,0.5); }
+    .card:hover::before, .card:hover::after { width: 28px; height: 28px; }
+
+    .card-photo { position: relative; width: 100%; height: 260px; overflow: hidden; }
+    .card-photo img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: sepia(20%) contrast(1.05);
+      transition: transform 0.5s ease, filter 0.3s ease;
+    }
+    .card:hover .card-photo img { transform: scale(1.04); filter: sepia(0%) contrast(1.05); }
+    .placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1e1b14, #2d2820);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 5rem;
+    }
+    .card-photo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 55%, rgba(13,12,10,0.85));
+      pointer-events: none;
+    }
+
+    .card-photo .view-hint {
+      position: absolute;
+      bottom: 14px; left: 50%;
+      transform: translateX(-50%) translateY(6px);
+      opacity: 0;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      font-family: 'Poiret One', sans-serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold-light);
+      z-index: 3;
+      white-space: nowrap;
+    }
+    .card:hover .view-hint { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    .card-body { padding: 22px 24px 26px; border-top: 1px solid rgba(201,168,76,0.2); }
+    .card-body h2 {
+      font-family: 'Poiret One', sans-serif;
+      font-size: 1.6rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--gold-light);
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 8px; font-size: 0.72rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    }
+    .badge::before, .badge::after {
+      content: ''; display: inline-block; width: 20px; height: 1px;
+      background: var(--gold); opacity: 0.6;
+    }
+    .card-body p.bio {
+      margin-top: 14px; font-size: 1rem; font-weight: 300;
+      font-style: italic; color: #b5aa90; line-height: 1.65;
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(10, 9, 7, 0.92);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--black);
+      border: 1px solid rgba(201,168,76,0.4);
+      max-width: 680px;
+      width: 100%;
+      position: relative;
+      transform: translateY(24px) scale(0.97);
+      transition: transform 0.35s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal::before, .modal::after {
+      content: '';
+      position: absolute;
+      width: 24px; height: 24px;
+      border-color: var(--gold);
+      border-style: solid;
+      z-index: 2;
+    }
+    .modal::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .modal::after  { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    .modal-photo {
+      width: 100%; height: 340px; overflow: hidden; position: relative;
+    }
+    .modal-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: sepia(10%) contrast(1.05);
+    }
+    .modal-photo .modal-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #1e1b14, #2d2820);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 8rem;
+    }
+    .modal-photo::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(13,12,10,0.9));
+      pointer-events: none;
+    }
+
+    .modal-body { padding: 32px 40px 40px; }
+
+    .modal-deco {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .modal-deco span { flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold), transparent); }
+
+    .modal-body h2 {
+      font-family: 'Poiret One', sans-serif;
+      font-size: 2.4rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold-light);
+      line-height: 1;
+    }
+    .modal-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      margin-top: 10px; font-size: 0.75rem;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted);
+    }
+    .modal-badge::before, .modal-badge::after {
+      content: ''; display: inline-block; width: 24px; height: 1px;
+      background: var(--gold); opacity: 0.6;
+    }
+
+    .modal-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+      margin: 24px 0;
+    }
+
+    .modal-bio {
+      font-size: 1.15rem; font-weight: 300; font-style: italic;
+      color: #c8bc9e; line-height: 1.8;
+    }
+
+    .modal-stats {
+      display: flex; gap: 0;
+      margin-top: 28px;
+      border: 1px solid rgba(201,168,76,0.2);
+    }
+    .stat {
+      flex: 1; text-align: center; padding: 18px 12px;
+      border-right: 1px solid rgba(201,168,76,0.2);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-value {
+      font-family: 'Poiret One', sans-serif;
+      font-size: 1.4rem; letter-spacing: 0.05em;
+      color: var(--gold-light);
+    }
+    .stat-label {
+      font-size: 0.62rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    .modal-close {
+      position: absolute; top: 16px; right: 16px;
+      background: rgba(13,12,10,0.8);
+      border: 1px solid rgba(201,168,76,0.4);
+      color: var(--gold);
+      font-family: 'Poiret One', sans-serif;
+      font-size: 0.7rem; letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      cursor: pointer;
+      z-index: 10;
+      transition: background 0.2s, color 0.2s;
+    }
+    .modal-close:hover { background: var(--gold); color: var(--black); }
+
+    /* ── FOOTER ── */
+    footer { text-align: center; padding: 36px 16px 48px; }
+    footer::before {
+      content: '';
+      display: block; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      width: 60%; margin: 0 auto 24px;
+    }
+    footer p {
+      font-family: 'Poiret One', sans-serif;
+      letter-spacing: 0.2em; font-size: 0.8rem;
+      text-transform: uppercase; color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="deco-line">
+      <span></span>
+      <div class="deco-diamond"></div>
+      <div class="deco-diamond" style="width:5px;height:5px;opacity:0.5"></div>
+      <div class="deco-diamond"></div>
+      <span></span>
+    </div>
+    <h1>My Pets</h1>
+    <p class="subtitle">a portrait collection</p>
+    <div class="deco-line" style="margin-top:16px;margin-bottom:0">
+      <span></span>
+      <div class="deco-diamond" style="width:5px;height:5px;opacity:0.5"></div>
+      <div class="deco-diamond"></div>
+      <div class="deco-diamond" style="width:5px;height:5px;opacity:0.5"></div>
+      <span></span>
+    </div>
+  </header>
+
+  <main>
+    <div class="gallery">
+
+      <!-- DIGI -->
+      <div class="card"
+        data-name="Digi"
+        data-badge="Pug · 7 Years"
+        data-bio="Loves people, hates the sound of children's laughter, and doesn't understand boundaries or personal space. Her name is short for Didgeridoo."
+        data-img="images/ComputerDigi.jpg"
+        data-stat1="0" data-stat1-label="Teeth"
+        data-stat2="1 (Part Time)" data-stat2-label="Brain Cell"
+        data-stat3="Zero" data-stat3-label="Foods She Doesn't Like">
+        <!-- Add data-img="images/digi.jpg" once you have a photo -->
+        <div class="card-photo">
+          <div class="placeholder">🐶</div>
+          <div class="view-hint">◆ View Profile ◆</div>
+        </div>
+        <div class="card-body">
+          <h2>Digi</h2>
+          <div class="badge">Pug &nbsp;·&nbsp; 7 Years</div>
+          <p class="bio">Loves people, hates the sound of children's laughter, and doesn't understand boundaries or personal space.</p>
+        </div>
+      </div>
+
+      <!-- MARGOT -->
+      <div class="card"
+        data-name="Margot"
+        data-badge="House Panther · 4 Years"
+        data-bio="Delights in tormenting other animals, will sell out her whole family for a single Churu, and sometimes screams for absolutely no reason. Her favorite thing in the world is Digi."
+         data-img="images/margotsun.jpg"
+        data-stat1="Infinite" data-stat1-label="Audacity"
+        data-stat2="165 IQ" data-stat2-label="Brain Cell Score"
+        data-stat3="~500" data-stat3-label="Biscuits / Day">
+        <!-- Add data-img="images/margot.jpg" once you have a photo -->
+        <div class="card-photo">
+          <div class="placeholder">🐈‍⬛</div>
+          <div class="view-hint">◆ View Profile ◆</div>
+        </div>
+        <div class="card-body">
+          <h2>Margot</h2>
+          <div class="badge">House Panther &nbsp;·&nbsp; 4 Years</div>
+          <p class="bio">Delights in tormenting other animals, will sell out her whole family for a single Churu, sometimes screams for no reason.</p>
+        </div>
+      </div>
+
+      <!-- BARBARA -->
+      <div class="card"
+        data-name="Barbara"
+        data-badge="British Shorthair (or AI?) · 1 Year"
+        data-bio="Just happy to be here. Really good at parkour, obsessed with the Roomba, and finds the toilet flush endlessly fascinating. No one knows what's going on in there."
+       data-img="images/BarbieSun.jpg"
+        data-stat1="0 (Two Bees)" data-stat1-label="Brain Cells"
+        data-stat2="~65" data-stat2-label="Get Off the Counter / Day"
+        data-stat3="∞" data-stat3-label="Roomba Obsession">
+        <!-- Add data-img="images/barbara.jpg" once you have a photo -->
+        <div class="card-photo">
+          <div class="placeholder">🐱</div>
+          <div class="view-hint">◆ View Profile ◆</div>
+        </div>
+        <div class="card-body">
+          <h2>Barbara</h2>
+          <div class="badge">British Shorthair (or AI?) &nbsp;·&nbsp; 1 Year</div>
+          <p class="bio">Just happy to be here, really good at parkour, obsessed with the Roomba and watching the toilet flush.</p>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer>
+    <p>Est. with love &nbsp;◆&nbsp; a portrait collection</p>
+  </footer>
+
+  <!-- ── MODAL ── -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <button class="modal-close" id="modalClose">✕ &nbsp;Close</button>
+      <div class="modal-photo" id="modalPhoto">
+        <div class="modal-placeholder" id="modalEmoji"></div>
+      </div>
+      <div class="modal-body">
+        <div class="modal-deco">
+          <span></span>
+          <div class="deco-diamond"></div>
+          <div class="deco-diamond" style="width:5px;height:5px;opacity:0.5"></div>
+          <div class="deco-diamond"></div>
+          <span style="background:linear-gradient(90deg,transparent,var(--gold));"></span>
+        </div>
+        <h2 id="modalName"></h2>
+        <div class="modal-badge" id="modalBadge"></div>
+        <div class="modal-divider"></div>
+        <p class="modal-bio" id="modalBio"></p>
+        <div class="modal-stats">
+          <div class="stat">
+            <div class="stat-value" id="modalStat1"></div>
+            <div class="stat-label" id="modalStat1Label"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="modalStat2"></div>
+            <div class="stat-label" id="modalStat2Label"></div>
+          </div>
+          <div class="stat">
+            <div class="stat-value" id="modalStat3"></div>
+            <div class="stat-label" id="modalStat3Label"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const overlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+
+    document.querySelectorAll('.card').forEach(card => {
+      card.addEventListener('click', () => {
+        const d = card.dataset;
+
+        const photoEl = document.getElementById('modalPhoto');
+        const emojiEl = document.getElementById('modalEmoji');
+        const oldImg = photoEl.querySelector('img');
+        if (oldImg) oldImg.remove();
+
+        if (d.img) {
+          const img = document.createElement('img');
+          img.src = d.img;
+          img.alt = d.name;
+          emojiEl.style.display = 'none';
+          photoEl.insertBefore(img, photoEl.firstChild);
+        } else {
+          emojiEl.style.display = 'flex';
+          emojiEl.textContent = d.emoji || '🐾';
+        }
+
+        document.getElementById('modalName').textContent = d.name;
+        document.getElementById('modalBadge').textContent = d.badge;
+        document.getElementById('modalBio').textContent = d.bio;
+        document.getElementById('modalStat1').textContent = d.stat1;
+        document.getElementById('modalStat1Label').textContent = d.stat1Label;
+        document.getElementById('modalStat2').textContent = d.stat2;
+        document.getElementById('modalStat2Label').textContent = d.stat2Label;
+        document.getElementById('modalStat3').textContent = d.stat3;
+        document.getElementById('modalStat3Label').textContent = d.stat3Label;
+
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+
+    function closeModal() {
+      overlay.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    modalClose.addEventListener('click', closeModal);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+  </script>
+
+</body>
+</html>
